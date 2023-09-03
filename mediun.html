@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <style>
+      .game-container {
+        width: 400px;
+        height: 400px;
+        background-color: #eee;
+        position: relative;
+        overflow: hidden;
+      }
+      .victory-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.8); /* Полупрозрачен фон */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999; /* Висок индекс на заслонване, за да покрива всичко друго */
+        color: #ffffff; /* Бял текст */
+        font-size: 24px;
+      }
+
+      /* Стилизация на съобщението за победа */
+      .victory-message {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      /* Стилизация на анимацията за победа */
+      .victory-animation {
+        width: 100px;
+        height: 100px;
+        background-image: url("victory.gif"); /* Гиф анимация за победа */
+        background-size: cover;
+        animation: spin 2s linear infinite; /* Анимация на завъртане */
+      }
+
+      /* Стилове при хоъвър */
+      .button:hover {
+        background-color: #2980b9;
+      }
+
+      /* Анимация за завъртане */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #3498db;
+        color: #ffffff;
+        border: none;
+        cursor: pointer;
+        margin: 10px;
+      }
+
+      /* Стилове при навлизане на мишката */
+      .button:hover {
+        background-color: #2980b9; /* Промяна на цвета на фона */
+        transform: scale(1.05); /* Леко увеличение на бутона */
+      }
+
+      /* Стилове при клик */
+      .button:active {
+        background-color: #1f6799; /* Промяна на цвета на фона при клик */
+        transform: scale(0.95); /* Леко намаляване на бутона при клик */
+      }
+      .game-container {
+        width: 600px;
+        height: 450px;
+        position: relative;
+        border: 1px solid black;
+        overflow: hidden;
+        background-image: url("7RN4.gif"); /* Замести с пътя до твоята картинка */
+        background-size: cover;
+      }
+      .game-over-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.8); /* Полупрозрачен фон */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999; /* Висок индекс на заслонване, за да покрива всичко друго */
+        color: #ffffff; /* Бял текст */
+        font-size: 24px;
+      }
+      .game-over-message {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .car {
+        width: 34px;
+        height: 70px;
+        background-image: url("car.png"); /* Път до твоя снимка на колата */
+        background-size: cover;
+        position: absolute;
+        bottom: 0;
+        transition: left 0.1s ease-out, bottom 0.1s ease-out;
+        border-radius: 8px;
+      }
+
+      .obstacle {
+        width: 70px;
+        height: 70px;
+        background-image: url("opponent.png"); /* Път до твоята снимка на опонентите */
+        background-size: cover;
+        position: absolute;
+        top: 0;
+        border-radius: 50%;
+      }
+      .share-button {
+        background-color: #27ae60;
+        color: #ffffff;
+      }
+
+      /* Стилове при хоъвър */
+      .button:hover {
+        background-color: #2980b9;
+      }
+
+      #score {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 18px;
+      }
+
+      #timer {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 18px;
+      }
+
+      .mouse-controls {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .mouse-control-button {
+      cursor: pointer;
+      padding: 5px 10px;
+      border: 1px solid white;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .mouse-control-button:hover {
+      background-color: #555;
+    }
+    </style>
+    <title>Car Game</title>
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="car"></div>
+    </div>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time: 0s</div>
+    <a href="s.html"><button class="button">Върни ме</button></a>
+    <div class="mouse-controls">
+      <div class="mouse-control-button" id="moveLeft">Left</div>
+      <div class="mouse-control-button" id="moveRight">Right</div>
+    </div>
+    <!-- Бутон за стартиране на играта -->
+
+    <script>
+      const moveLeftButton = document.getElementById('moveLeft');
+    const moveRightButton = document.getElementById('moveRight');
+
+    moveLeftButton.addEventListener('click', () => {
+      moveCarLeft();
+    });
+
+    moveRightButton.addEventListener('click', () => {
+      moveCarRight();
+    });
+
+    function moveCarLeft() {
+      if (isGameOver) return;
+
+      if (carPositionX > 0) {
+        carPositionX -= carSpeed;
+        car.style.left = `${carPositionX}%`;
+      }
+    }
+
+    function moveCarRight() {
+      if (isGameOver) return;
+
+      if (carPositionX < 100) {
+        carPositionX += carSpeed;
+        car.style.left = `${carPositionX}%`;
+      }
+    }
+
+
+
+      const car = document.querySelector(".car");
+      const gameContainer = document.querySelector(".game-container");
+      const scoreElement = document.getElementById("score");
+      const timerElement = document.getElementById("timer");
+
+      let carPositionX = 0;
+      let carPositionY = 0;
+      let obstacles = [];
+      let score = 0;
+    let carSpeed = 5;
+    let isGameOver = false;
+      let startTime = Date.now();
+
+      function moveCar(event) {
+        if (event.key === "ArrowLeft" && carPositionX > 0) {
+          carPositionX -= 2;
+        } else if (event.key === "ArrowRight" && carPositionX < 90) {
+          carPositionX += 2;
+        } else if (event.key === "ArrowUp" && carPositionY < 340) {
+          carPositionY += 10;
+        } else if (event.key === "ArrowDown" && carPositionY > 0) {
+          carPositionY -= 10;
+        }
+
+        car.style.left = `${carPositionX}%`;
+        car.style.bottom = `${carPositionY}px`;
+      }
+
+      function createObstacle() {
+      if (isGameOver) return; // Ако играта вече е приключила, не създавайте препятствия.
+
+      const obstacleCount = 5; // Брой на препятствията
+      const obstacleWidth = 0.5;
+      const gapBetweenObstacles = 100 / (obstacleCount - 1); // Разстояние между препятствията
+
+      setTimeout(() => {
+        for (let i = 0; i < obstacleCount; i++) {
+          const obstacle = document.createElement('div');
+          obstacle.classList.add('obstacle');
+
+          // Генериране на случайна позиция на хоризонтала
+          const randomPositionX = Math.random() * (100 - obstacleWidth);
+          obstacle.style.left = `${randomPositionX}%`;
+
+          obstacle.style.top = '0';
+          gameContainer.appendChild(obstacle);
+
+          const fallSpeed = 0.1; // Скорост на падане на препятствията (по-бавно)
+
+          function moveObstacle() {
+            if (isGameOver) {
+              obstacle.remove(); // Премахвайте препятствието, ако играта е приключила.
+              return;
+            }
+
+            const obstaclePositionY = obstacle.getBoundingClientRect().top;
+            if (obstaclePositionY < gameContainer.offsetHeight) {
+              obstacle.style.top = `${obstaclePositionY + fallSpeed}px`;
+              requestAnimationFrame(moveObstacle);
+            } else {
+              obstacle.remove(); // Премахване на препятствието след като излезе извън контейнера
+            }
+
+            // Проверка за колизия между колата и препятствието
+            if (checkCollision(car, obstacle)) {
+              isGameOver = true;
+              // Две минути (120 секунди)
+          alert(`Game Over! Your final score: ${score}`);
+            }
+          }
+
+          requestAnimationFrame(moveObstacle);
+        }
+      }, Math.random() * 1000); // Случайно забавяне между 0 и 3 секунди преди да започне да пада препятствието
+    }
+
+    setInterval(createObstacle, 2000);
+
+    function checkCollision(element1, element2) {
+      const rect1 = element1.getBoundingClientRect();
+      const rect2 = element2.getBoundingClientRect();
+      return (
+        rect1.left < rect2.right &&
+        rect1.right > rect2.left &&
+        rect1.top < rect2.bottom &&
+        rect1.bottom > rect2.top
+      );
+    }
+
+    function updateScore() {
+      if (!isGameOver) {
+        score += 10; // Увеличаване на броя на точките при успешно избегнато препятствие
+        scoreElement.textContent = `Score: ${score}`;
+      }
+    }
+
+    setInterval(updateScore, 1000); // Обновяване на точките на всеки 1 секунда
+      function endGame() {
+        isGameOver = true;
+        clearInterval(gameLoop);
+        alert(`Game Over! Your final score: ${score}`);
+      }
+
+      function updateScore() {
+        score += 2;
+        scoreElement.textContent = `Score: ${score}`;
+        if (score === 102) {
+          alert(`Congratulations! You've won! STAGE 2. Press buton to retern and try to pass the next level.`);
+          clearInterval(stop);
+        }
+      }
+
+      function updateGame() {
+        updateScore();
+        updateObstacles();
+        checkGameEnd();
+      }
+
+      function checkGameEnd() {
+        const currentTime = Date.now();
+        const elapsedTime = (currentTime - startTime) / 1000;
+        if (elapsedTime >= 9000) {
+          // Две минути (120 секунди)
+          alert(`Game Over! Your final score: ${score}`);
+          endGame();
+        }
+      }
+
+      function updateTimer() {
+      if (!isGameOver) {
+        const currentTime = Date.now();
+        const elapsedTime = (currentTime - startTime) / 1000; // Пресмятане на изминалото време в секунди
+        timerElement.textContent = `Time: ${elapsedTime.toFixed(1)}s`;
+      }
+      requestAnimationFrame(updateTimer);
+    }
+
+    updateTimer();
+
+      function accelerateGame() {
+        speed -= 70; // Намали интервала с 50 милисекунди
+        clearInterval(gameLoop);
+        gameLoops = setInterval(updateScore, speed);
+      }
+
+      window.addEventListener("keydown", moveCar);
+      updateObstacles();
+      updateTimer();
+
+      const gameLoop = setInterval(() => {
+        updateScore();
+      }, 1000);
+    </script>
+  </body>
+</html>

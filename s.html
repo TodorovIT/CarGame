@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+ /* Стилизация на бутона и центриране */
+.button-container {
+  display: flex;
+  justify-content: center; /* Центриране по хоризонталата */
+  align-items: center; /* Центриране по вертикалата */
+  height: 100px; /* Височина на контейнера - 100% от височината на виждащата се част на прозореца (viewport) */
+}
+
+.button {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+  border: none;
+  background-color: #3498db; /* Цвят на фона */
+  color: #ffffff; /* Цвят на текста */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-left: 50px;
+  
+}
+
+/* Стилове при навлизане на мишката */
+.button:hover {
+  background-color: #2980b9; /* Промяна на цвета на фона */
+  transform: scale(1.05); /* Леко увеличение на бутона */
+}
+
+/* Стилове при клик */
+.button:active {
+  background-color: #1f6799; /* Промяна на цвета на фона при клик */
+  transform: scale(0.95); /* Леко намаляване на бутона при клик */
+}
+
+
+    </style>
+    <title>Start</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+</head>
+<body>
+    <h1>Здравейте искате ли да играете безплатна и готина игра. Изберете си ниво и се забавлявайте!</h1>
+    <div class="button-container">
+        <a href="index.html"><button class="button">Лесно</button></a>
+        <a href="mediun.html"><button class="button">Средно</button></a>
+        <a href="hard.html"><button class="button">Трудно</button></a>
+        <a href="impossible.html"><button class="button">Невъзможно</button></a>
+
+      </div>
+</body>
+</html>
